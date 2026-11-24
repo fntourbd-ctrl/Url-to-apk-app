@@ -1,0 +1,79 @@
+name: Build App
+run-name: "build ${{ inputs.id }}"
+on:
+  workflow_dispatch:
+    inputs:
+      id:
+        description: Build id
+        required: true
+      config:
+        description: Config JSON
+        required: true
+      icon_url:
+        description: Icon URL
+        required: false
+        default: ""
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate id
+        env:
+          BID: ${{ inputs.id }}
+        run: echo "$BID" | grep -Eq '^[a-f0-9]{12}$'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pillow
+      - name: Prepare project
+        id: prep
+        env:
+          CONFIG: ${{ inputs.config }}
+          ICON_URL: ${{ inputs.icon_url }}
+        run: python prepare.py
+      - name: Keystore
+        env:
+          KS_B64: ${{ secrets.KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.KEYSTORE_PASSWORD || 'android123' }}
+          KS_ALIAS: ${{ secrets.KEY_ALIAS || 'key' }}
+        run: |
+          if [ -n "$KS_B64" ]; then
+            echo "$KS_B64" | base64 -d > android/release.jks
+          else
+            keytool -genkeypair -keystore android/release.jks -alias "$KS_ALIAS" -keyalg RSA -keysize 2048 -validity 10000 -storepass "$KS_PASS" -keypass "$KS_PASS" -dname "CN=WebToAPK"
+          fi
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.5"
+      - name: Build
+        working-directory: android
+        env:
+          KS_FILE: ${{ github.workspace }}/android/release.jks
+          KS_PASS: ${{ secrets.KEYSTORE_PASSWORD || 'android123' }}
+          KS_ALIAS: ${{ secrets.KEY_ALIAS || 'key' }}
+        run: gradle --no-daemon ${{ steps.prep.outputs.aab == 'true' && 'bundleRelease' || 'assembleRelease' }}
+      - name: Collect
+        env:
+          SLUG: ${{ steps.prep.outputs.slug }}
+        run: |
+          mkdir out
+          if [ "${{ steps.prep.outputs.aab }}" = "true" ]; then
+            cp android/app/build/outputs/bundle/release/app-release.aab "out/$SLUG.aab"
+          else
+            cp android/app/build/outputs/apk/release/app-release.apk "out/$SLUG.apk"
+          fi
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BID: ${{ inputs.id }}
+        run: |
+          gh release create "build-$BID" out/* --title "build-$BID" --notes "auto build" --latest=false
+          gh release list --limit 200 --json tagName -q '.[30:][].tagName' | xargs -r -I{} gh release delete {} --cleanup-tag -y

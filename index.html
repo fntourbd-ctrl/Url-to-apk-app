@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>WebToAPK Pro</title>
+<style>
+:root{--bg:#07070f;--card:rgba(255,255,255,.05);--bd:rgba(255,255,255,.1);--tx:#f1f1f8;--mu:#9a9ab5;--a:#7c5cff;--b:#00d4ff;--ok:#2ee59d;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#f4f4fb;--card:rgba(255,255,255,.8);--bd:rgba(0,0,0,.1);--tx:#15152a;--mu:#5d5d78}}
+:root[data-theme="light"]{--bg:#f4f4fb;--card:rgba(255,255,255,.8);--bd:rgba(0,0,0,.1);--tx:#15152a;--mu:#5d5d78}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh;overflow-x:hidden}
+.orb{position:fixed;border-radius:50%;filter:blur(90px);opacity:.45;z-index:0;animation:float 14s ease-in-out infinite}
+.o1{width:340px;height:340px;background:var(--a);top:-80px;left:-80px}
+.o2{width:300px;height:300px;background:var(--b);bottom:-80px;right:-60px;animation-delay:-6s}
+@keyframes float{50%{transform:translate(40px,50px) scale(1.15)}}
+main{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:28px 16px 60px}
+.hero{text-align:center;margin-bottom:26px;animation:up .8s both}
+.badge{display:inline-block;padding:5px 14px;border:1px solid var(--bd);border-radius:99px;font-size:12px;color:var(--mu);background:var(--card);backdrop-filter:blur(10px)}
+h1{font-size:clamp(30px,7vw,48px);margin:14px 0 8px;background:linear-gradient(90deg,var(--a),var(--b),var(--a));background-size:200%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 5s linear infinite}
+@keyframes shine{to{background-position:200%}}
+.hero p{color:var(--mu);margin:0}
+@keyframes up{from{opacity:0;transform:translateY(24px)}}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:20px;margin-bottom:16px;backdrop-filter:blur(18px);animation:up .8s both}
+h2{font-size:15px;margin:0 0 14px;display:flex;gap:8px;align-items:center}
+h2 i{font-style:normal;width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--a),var(--b));display:grid;place-items:center;font-size:13px;color:#fff}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.g{grid-template-columns:1fr}}
+label{font-size:12px;color:var(--mu);display:block;margin-bottom:5px}
+input,select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--bd);background:rgba(127,127,160,.1);color:var(--tx);font-size:15px;outline:none;transition:.25s}
+input:focus,select:focus{border-color:var(--a);box-shadow:0 0 0 4px rgba(124,92,255,.2)}
+input[type=color]{padding:3px;height:46px}
+.full{grid-column:1/-1}
+.icon{display:flex;gap:14px;align-items:center}
+.prev{width:64px;height:64px;border-radius:16px;background:linear-gradient(135deg,var(--a),var(--b));display:grid;place-items:center;font-size:26px;overflow:hidden;flex:none;box-shadow:0 8px 24px rgba(124,92,255,.4)}
+.prev img{width:100%;height:100%;object-fit:cover}
+.tg{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--bd);font-size:14px}
+.tg:last-child{border:0}.tg small{display:block;color:var(--mu);font-size:11px}
+.sw{position:relative;width:46px;height:26px;flex:none}
+.sw input{opacity:0;position:absolute;inset:0;width:100%;height:100%;margin:0;cursor:pointer;z-index:2}
+.sw span{position:absolute;inset:0;border-radius:99px;background:rgba(127,127,160,.35);transition:.3s}
+.sw span:after{content:"";position:absolute;width:20px;height:20px;top:3px;left:3px;border-radius:50%;background:#fff;transition:.3s}
+.sw input:checked+span{background:linear-gradient(90deg,var(--a),var(--b))}
+.sw input:checked+span:after{transform:translateX(20px)}
+details summary{cursor:pointer;font-weight:600;font-size:15px;list-style:none;display:flex;justify-content:space-between}
+details summary:after{content:"+";color:var(--b)}details[open]>summary:after{content:"−"}
+details[open]>summary{margin-bottom:14px}
+.btn{width:100%;padding:16px;border:0;border-radius:16px;font-size:17px;font-weight:700;color:#fff;cursor:pointer;background:linear-gradient(90deg,var(--a),var(--b));box-shadow:0 10px 30px rgba(124,92,255,.45);transition:.25s;position:relative;overflow:hidden}
+.btn:active{transform:scale(.97)}
+.btn:after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:rgba(255,255,255,.35);transform:skewX(-20deg);animation:sw 3s infinite}
+@keyframes sw{to{left:130%}}
+.btn:disabled{opacity:.6}
+#build{display:none}
+.bar{height:10px;border-radius:99px;background:rgba(127,127,160,.25);overflow:hidden;margin:10px 0 16px}
+.bar div{height:100%;width:0;background:linear-gradient(90deg,var(--a),var(--b));transition:width .5s}
+.st{display:flex;gap:10px;align-items:center;padding:6px 0;font-size:14px;color:var(--mu);transition:.3s}
+.st b{width:20px;height:20px;border-radius:50%;border:2px solid var(--bd);display:grid;place-items:center;font-size:11px;flex:none}
+.st.on{color:var(--tx)}.st.on b{border-color:var(--b);border-top-color:transparent;animation:spin 1s linear infinite}
+.st.done{color:var(--tx)}.st.done b{background:var(--ok);border-color:var(--ok);color:#04150d;animation:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+#done{display:none;text-align:center}
+.ok{width:70px;height:70px;border-radius:50%;background:var(--ok);color:#04150d;font-size:34px;display:grid;place-items:center;margin:0 auto 12px;animation:pop .6s cubic-bezier(.2,2,.4,1)}
+@keyframes pop{from{transform:scale(0)}}
+pre{background:rgba(0,0,0,.35);color:#c9d1ff;padding:12px;border-radius:12px;font-size:12px;text-align:left;overflow-x:auto;max-height:200px}
+.note{font-size:12px;color:var(--mu);margin-top:10px}
+</style>
+</head>
+<body>
+<div class="orb o1"></div><div class="orb o2"></div>
+<main>
+<div class="hero">
+<span class="badge">✦ Premium · Auto Build</span>
+<h1>WebToAPK Pro</h1>
+<p>Convert any website or HTML into an Android app in one tap</p>
+</div>
+
+<div class="card">
+<h2><i>1</i>App basics</h2>
+<div class="g">
+<div class="full icon"><div class="prev" id="prev">📱</div>
+<div style="flex:1"><label>App icon (512×512 PNG)</label><input type="file" id="icon" accept="image/*"></div></div>
+<div><label>App name</label><input id="name" value="My App"></div>
+<div><label>Package name</label><input id="pkg" value="com.myapp.app"></div>
+<div class="full"><label>Website URL</label><input id="url" type="url" placeholder="https://example.com" value="https://example.com"></div>
+<div><label>Version name</label><input id="ver" value="1.0.0"></div>
+<div><label>Version code</label><input id="vc" type="number" value="1"></div>
+</div>
+</div>
+
+<div class="card">
+<details open>
+<summary>⚙️ Advanced settings</summary>
+<div class="g">
+<div><label>Theme / status bar color</label><input type="color" id="color" value="#7c5cff"></div>
+<div><label>Orientation</label><select id="ori"><option>auto</option><option>portrait</option><option>landscape</option></select></div>
+<div><label>Splash animation</label><select id="splash"><option>fade</option><option>zoom</option><option>slide-up</option><option>pulse</option></select></div>
+
+<div><label>Min Android SDK</label><select id="sdk"><option value="21">Android 5.0 (21)</option><option value="24">Android 7.0 (24)</option><option value="26" selected>Android 8.0 (26)</option><option value="29">Android 10 (29)</option></select></div>
+<div><label>User agent</label><select id="ua"><option>default</option><option>desktop</option></select></div>
+
+</div>
+<div style="margin-top:10px">
+<div class="tg"><div>Fullscreen mode<small>Hide status and navigation bars</small></div><div class="sw"><input type="checkbox" id="fs"><span></span></div></div>
+<div class="tg"><div>Pull to refresh<small>Swipe down to reload page</small></div><div class="sw"><input type="checkbox" id="ptr" checked><span></span></div></div>
+<div class="tg"><div>Offline cache<small>Open app without internet</small></div><div class="sw"><input type="checkbox" id="off" checked><span></span></div></div>
+<div class="tg"><div>Enable JavaScript</div><div class="sw"><input type="checkbox" id="js" checked><span></span></div></div>
+<div class="tg"><div>Allow file downloads</div><div class="sw"><input type="checkbox" id="dl" checked><span></span></div></div>
+<div class="tg"><div>Camera and mic permission</div><div class="sw"><input type="checkbox" id="cam"><span></span></div></div>
+
+<div class="tg"><div>Open external links in browser</div><div class="sw"><input type="checkbox" id="ext" checked><span></span></div></div>
+<div class="tg"><div>Prevent screenshots</div><div class="sw"><input type="checkbox" id="ss"><span></span></div></div>
+
+</div>
+</details>
+</div>
+
+<button class="btn" id="go">🚀 Generate APK</button>
+
+<div class="card" id="build" style="margin-top:16px">
+<h2><i>⚡</i>Building your app…</h2>
+<div class="bar"><div id="pb"></div></div>
+<div id="steps"></div>
+</div>
+
+<div class="card" id="done" style="margin-top:16px">
+<div class="ok">✓</div>
+<h2 style="justify-content:center" id="dt">Build ready</h2>
+<p class="note" id="dm"></p>
+<button class="btn" id="dlb" style="margin-top:12px">⬇ Download APK</button>
+<details style="margin-top:14px;text-align:left"><summary>Build config (JSON)</summary><pre id="cfg"></pre></details>
+</div>
+</main>
+
+<script>
+var $=function(i){return document.getElementById(i)};
+var iconData="";
+$("icon").onchange=function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();r.onload=function(){iconData=r.result;$("prev").innerHTML='<img src="'+iconData+'" alt="">'};r.readAsDataURL(f)};
+var API_URL="/api/build";
+var steps=["Validating URL and settings","Generating Android project","Applying icon and splash","Compiling resources","Signing APK","Optimizing and packaging"];
+function cfg(){var c={};["name","pkg","url","ver","vc","color","ori","splash","sdk","ua"].forEach(function(k){c[k]=$(k).value});["fs","ptr","off","js","dl","cam","ext","ss"].forEach(function(k){c[k]=$(k).checked});c.icon=iconData?"[custom icon]":"[default]";return c}
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
+async function realBuild(api,body){
+var r=await fetch(api,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+var j=await r.json();
+if(!r.ok||!j.id)throw new Error(j.error||"Server error");
+var base=api.replace(/\/build\/?$/,"/status/");
+for(var n=0;n<150;n++){
+await sleep(5000);
+var s=await (await fetch(base+j.id)).json();
+if(s.status==="done")return{downloadUrl:s.downloadUrl};
+if(s.status==="failed")throw new Error("Build failed on server");
+}
+throw new Error("Timed out");}
+$("go").onclick=async function(){
+var u=$("url").value.trim();
+if(!/^https?:\/\/.+\..+/.test(u)){$("url").focus();$("url").style.borderColor="#ff5c7a";return}
+$("url").style.borderColor="";
+var c=cfg(),btn=$("go");btn.disabled=true;$("done").style.display="none";
+$("build").style.display="block";
+$("steps").innerHTML=steps.map(function(t,i){return'<div class="st" id="s'+i+'"><b></b>'+t+'</div>'}).join("");
+$("pb").style.width="0";$("build").scrollIntoView({behavior:"smooth"});
+var api=API_URL.indexOf("YOUR-API")>-1?"":API_URL;
+try{if(api)localStorage.setItem("api",api)}catch(e){}
+var link=null,err="";
+if(api){try{
+var body=JSON.parse(JSON.stringify(c));body.icon=iconData;
+link=realBuild(api,body);
+link.catch(function(){})}catch(e){err=String(e)}}
+for(var i=0;i<steps.length;i++){
+$("s"+i).className="st on";$("pb").style.width=((i+.5)/steps.length*100)+"%";
+if(api){if(i==steps.length-1){try{await link}catch(e){}}else{await Promise.race([link.catch(function(){}),sleep(25000)])}}else{await sleep(900)}$("s"+i).className="st done";$("s"+i).firstChild.textContent="✓"}
+$("pb").style.width="100%";
+var res=null;
+if(link){try{res=await link}catch(e){err=String(e.message||e)}}
+$("cfg").textContent=JSON.stringify(c,null,2);
+$("done").style.display="block";
+if(res&&res.downloadUrl){$("dt").textContent="Your APK is ready!";$("dm").textContent=c.name+" · v"+c.ver;
+$("dlb").onclick=function(){window.open(res.downloadUrl,"_blank")}}
+else{$("dt").textContent="Demo build finished";
+$("dm").textContent=api?("Backend error: "+(err||"no downloadUrl returned")+"."):"Build server is not configured yet, so no real APK was made.";
+$("dlb").onclick=function(){$("dm").textContent="Connect a build server to get a real APK file."}}
+$("done").scrollIntoView({behavior:"smooth"});btn.disabled=false};
+</script>
+</body>
+</html>

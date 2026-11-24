@@ -1,0 +1,43 @@
+plugins { id 'com.android.application' }
+
+def p = new Properties()
+def pf = rootProject.file('app.properties')
+if (pf.exists()) pf.withInputStream { p.load(it) }
+
+android {
+    namespace 'com.webtoapk.app'
+    compileSdk 34
+    defaultConfig {
+        applicationId p.getProperty('APP_ID', 'com.example.app')
+        minSdk Integer.parseInt(p.getProperty('MIN_SDK', '26'))
+        targetSdk 34
+        versionCode Integer.parseInt(p.getProperty('VER_CODE', '1'))
+        versionName p.getProperty('VER_NAME', '1.0.0')
+    }
+    signingConfigs {
+        release {
+            storeFile file(System.getenv('KS_FILE') ?: 'release.jks')
+            storePassword System.getenv('KS_PASS') ?: 'android123'
+            keyAlias System.getenv('KS_ALIAS') ?: 'key'
+            keyPassword System.getenv('KS_PASS') ?: 'android123'
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}
+
+dependencies {
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+}
